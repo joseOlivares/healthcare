@@ -1,0 +1,10 @@
+{
+  "name": "xCare",
+  "author": "Jose Luis Olivares, Luis José Prado, Guillermo Alexander Vásquez",
+  "version": "0.1",
+  "description": "Proyecto Healthcare",
+  "dependencies": {
+    "express": "^4.13.4",
+    "socket.io": "^2.1.1"
+  }
+}

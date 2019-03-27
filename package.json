@@ -1,7 +1,7 @@
 {
   "name": "xCare",
   "author": "Jose Luis Olivares, Luis José Prado, Guillermo Alexander Vásquez",
-  "version": "0.1",
+  "version": "1.0.0",
   "description": "Proyecto Healthcare",
   "dependencies": {
     "express": "^4.13.4",

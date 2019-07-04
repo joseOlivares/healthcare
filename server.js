@@ -27,6 +27,17 @@ connection.connect((err)=>{
         console.log('DB Connection failed \n Error'+err);
 });
 
+/***************MESSAGES */
+const MESSAGES = {
+  "delete_row_does_not_exist":{"message":"La fila a borrar no existe"},
+  "delete_row_successfull":{"message":"La fila fue borrada satisfactoriamente"},
+  "insert_row_successfull":{"message":"La fila fue insertada satisfactoriamente"},
+  "update_row_successfull":{"message":"La fila fue actualizada satisfactoriamente"},
+  "update_row_id_does_not_exist":{"message":"La fila no puede ser actualizada ya que el id no existe"},
+  "unexpected_error":{"message":"Ocurrio un error inesperado ", "excepcion":{}},
+}
+
+
 
 app.get('/', function(req, res){
   //res.sendFile(__dirname + '/index.html');
@@ -39,8 +50,11 @@ app.get('/paises',(req, res)=>{
     connection.query("SELECT * from `mydb`.`hc_pais`", function(err, rows, fields) {
         if (!err)
           res.send(rows);
-        else
-          console.log('Error while performing Query.'+err);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
       });
 });
 
@@ -49,24 +63,39 @@ app.get('/paises/:id',(req, res)=>{
     connection.query("SELECT * from `mydb`.`hc_pais` WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
         if (!err)
           res.send(rows);
-        else
-          console.log('Error while performing Query.'+err);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
       });
 });
 /*Para borrar se debe enviar el request /paises/id del pais*/
 app.delete('/paises/:id',(req, res)=>{
-    connection.query("DELETE * from `mydb`.`hc_pais` WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
-        if (!err)
-          res.send(rows);
-        else
-          console.log('Error while performing Query.'+err);
+    connection.query("DELETE from `mydb`.`hc_pais` WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
+        if (!err){
+          var insertedRows = rows.affectedRows;
+          var resultMessage = "";
+          if(insertedRows==0)
+            resultMessage = MESSAGES.delete_row_does_not_exist;
+          else
+            resultMessage = MESSAGES.delete_row_successfull;
+          res.send(resultMessage);
+        }
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+          
       });
 });
 
-/*Para llamarlo se debe enviar en el postman el siguiente body
+/*
+Agregar nuevo país 
+Para llamarlo se debe enviar en el postman el siguiente body
 {
-	"Pais":0,
-	"NombrePais":"United States"
+	"nombre_pais":"United States"
 }
 
 Donde Pais siempre debe ser igual a 0 para indicar que es un nuevo pais
@@ -75,41 +104,47 @@ y NombrePais es el nombre del pais
 
 app.post('/paises',(req, res)=>{
     let emp = req.body;
-    var sql = "SET @_Pais = ?; SET @_NombrePais = ?;\
-               CALL PaisAgregarOActualizar(@_Pais, @_NombrePais);"
-    connection.query(sql, [emp.Pais, emp.NombrePais], function(err, rows, fields) {
+    var sql = "INSERT INTO `mydb`.`hc_pais`(nombre_pais) VALUES(?)"
+    connection.query(sql, [emp.nombre_pais], function(err, rows, fields) {
         if (!err){
-            rows.forEach(element => {
-                if(element.constructor == Array){
-                    res.send("id = "+element[0].id_pais);
-                    //res.send(rows);
-                }
-            });
+          res.send(MESSAGES.insert_row_successfull);
         }
-        else
-          console.log('Error while performing Query.'+err);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
       });
 });
 
 
 /*Para llamarlo se debe enviar en el postman el siguiente body
 {
-	"Pais":2,
-	"NombrePais":"United States"
+	"id_pais":2,
+	"nombre_pais":"United States"
 }
 
 Donde Pais es el id del pais y NombrePais es el nuevo nombre*/
 
 app.put('/paises',(req, res)=>{
     let emp = req.body;
-    var sql = "SET @_Pais = ?; SET @_NombrePais = ?;\
-               CALL PaisAgregarOActualizar(@_Pais, @_NombrePais);"
-    connection.query(sql, [emp.Pais, emp.NombrePais], function(err, rows, fields) {
+    var sql = "update `mydb`.`hc_pais` set nombre_pais = ? \
+               WHERE id_pais = ?;"
+    connection.query(sql, [emp.nombre_pais, emp.id_pais], function(err, rows, fields) {
         if (!err){
-            res.send('updated successfully');
+          var insertedRows = rows.affectedRows;
+          var resultMessage = "";
+          if(insertedRows==0)
+            resultMessage = MESSAGES.update_row_id_does_not_exist;
+          else
+            resultMessage = MESSAGES.update_row_successfull;
+          res.send(resultMessage);
         }
-        else
-          console.log('Error while performing Query.'+err);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
       });
 });
 

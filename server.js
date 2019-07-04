@@ -2,7 +2,7 @@ var express= require('express');
 var app = express();
 var server=require('http').createServer(app);
 var bodyparser = require('body-parser');
-var mysql      = require('mysql');
+var mysql = require('mysql');
 //var io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public')); //serving statics files like css, js, images
@@ -10,15 +10,24 @@ app.use(bodyparser.json());
 
 var port=process.env.PORT || 3000; //this is for heroku
 
+var cloudMysql={ //para conexion remota
+  host: "sql9.freesqldatabase.com",
+  user: "sql9297610",
+  password: "ANArgtCTgB",
+  database:"sql9297610",
+  insecureAuth : true,
+  multipleStatements:true
+};
+ var localMysql={ //conexion local
+   host: "localhost",
+   user: "root",
+   password: "password",
+   database:"mydb",
+   insecureAuth : true,
+   multipleStatements:true
+ };
 
-var connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database:"mydb",
-    insecureAuth : true,
-    multipleStatements:true
-});
+var connection = mysql.createConnection(cloudMysql);
 
 connection.connect((err)=>{
     if(!err)
@@ -47,7 +56,7 @@ app.get('/', function(req, res){
 
 /*Obtener la lista de todos los paises*/
 app.get('/paises',(req, res)=>{
-    connection.query("SELECT * from `mydb`.`hc_pais`", function(err, rows, fields) {
+    connection.query("SELECT * from hc_pais", function(err, rows, fields) {
         if (!err)
           res.send(rows);
         else{
@@ -60,7 +69,7 @@ app.get('/paises',(req, res)=>{
 
 /*Obtiene un pais por su id, Para obtenerlo se debe enviar el request /paises/id del pais*/
 app.get('/paises/:id',(req, res)=>{
-    connection.query("SELECT * from `mydb`.`hc_pais` WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
+    connection.query("SELECT * from hc_pais WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
         if (!err)
           res.send(rows);
         else{

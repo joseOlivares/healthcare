@@ -113,7 +113,7 @@ y NombrePais es el nombre del pais
 
 app.post('/paises',(req, res)=>{
     let emp = req.body;
-    var sql = "INSERT INTO `mydb`.`hc_pais`(nombre_pais) VALUES(?)"
+    var sql = "INSERT INTO hc_pais(nombre_pais) VALUES(?)";
     connection.query(sql, [emp.nombre_pais], function(err, rows, fields) {
         if (!err){
           res.send(MESSAGES.insert_row_successfull);
@@ -137,8 +137,8 @@ Donde Pais es el id del pais y NombrePais es el nuevo nombre*/
 
 app.put('/paises',(req, res)=>{
     let emp = req.body;
-    var sql = "update `mydb`.`hc_pais` set nombre_pais = ? \
-               WHERE id_pais = ?;"
+    var sql = "update hc_pais set nombre_pais = ? \
+               WHERE id_pais = ?;";
     connection.query(sql, [emp.nombre_pais, emp.id_pais], function(err, rows, fields) {
         if (!err){
           var insertedRows = rows.affectedRows;

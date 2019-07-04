@@ -27,7 +27,7 @@ var cloudMysql={ //para conexion remota
    multipleStatements:true
  };
 
-var connection = mysql.createConnection(cloudMysql);
+var connection = mysql.createConnection(localMysql);
 
 connection.connect((err)=>{
     if(!err)
@@ -53,7 +53,7 @@ app.get('/', function(req, res){
   res.send('Project X is running...');
 });
 
-
+/************************************PAISES****************************************** */
 /*Obtener la lista de todos los paises*/
 app.get('/paises',(req, res)=>{
     connection.query("SELECT * from hc_pais", function(err, rows, fields) {
@@ -68,8 +68,8 @@ app.get('/paises',(req, res)=>{
 });
 
 /*Obtiene un pais por su id, Para obtenerlo se debe enviar el request /paises/id del pais*/
-app.get('/paises/:id',(req, res)=>{
-    connection.query("SELECT * from hc_pais WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
+app.get('/paises/:idpais',(req, res)=>{
+    connection.query("SELECT * from hc_pais WHERE id_pais = ? ", [req.params.idpais], function(err, rows, fields) {
         if (!err)
           res.send(rows);
         else{
@@ -79,9 +79,11 @@ app.get('/paises/:id',(req, res)=>{
         }
       });
 });
+
+
 /*Para borrar se debe enviar el request /paises/id del pais*/
-app.delete('/paises/:id',(req, res)=>{
-    connection.query("DELETE from `mydb`.`hc_pais` WHERE id_pais = ? ", [req.params.id], function(err, rows, fields) {
+app.delete('/paises/:idpais',(req, res)=>{
+    connection.query("DELETE from hc_pais WHERE id_pais = ? ", [req.params.idpais], function(err, rows, fields) {
         if (!err){
           var insertedRows = rows.affectedRows;
           var resultMessage = "";
@@ -107,8 +109,7 @@ Para llamarlo se debe enviar en el postman el siguiente body
 	"nombre_pais":"United States"
 }
 
-Donde Pais siempre debe ser igual a 0 para indicar que es un nuevo pais
-y NombrePais es el nombre del pais
+Donde  NombrePais es el nombre del pais
 */
 
 app.post('/paises',(req, res)=>{
@@ -156,6 +157,137 @@ app.put('/paises',(req, res)=>{
         }
       });
 });
+
+
+/*******************************CIUDADES***************************** */
+/**************Lista todas las ciudades que existen en la base de datos */
+app.get('/ciudades',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_pais\
+                    WHERE hc_ciudad.id_pais = hc_pais.id_pais", function(err, rows, fields) {
+      if (!err)
+        res.send(rows);      
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
+/*Obtiene una ciudad por su id, Para obtenerlo se debe enviar el request /ciudades/id de la ciudad*/
+app.get('/ciudades/:idciudad',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_pais\
+                    WHERE hc_ciudad.id_ciudad = ? and \
+                    hc_ciudad.id_pais = hc_pais.id_pais", [req.params.idciudad],function(err, rows, fields) {
+      if (!err)
+          res.send(rows);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+      });
+});
+
+/*Obtiene las ciudades de un pais para obtenerlas se debe llamar de la siguiente manera /paises/:idpais/ciudades*/
+app.get('/paises/:idpais/ciudades/',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_pais\
+                    WHERE hc_ciudad.id_pais = ? and \
+                    hc_ciudad.id_pais = hc_pais.id_pais", [req.params.idpais],function(err, rows, fields) {
+      if (!err)
+          res.send(rows);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+      });
+});
+
+
+/*Para borrar se debe enviar el request /ciudades/id del pais*/
+app.delete('/ciudades/:idciudad',(req, res)=>{
+  connection.query("DELETE from hc_ciudad WHERE id_ciudad = ? ", [req.params.idciudad], function(err, rows, fields) {
+      if (!err){
+        var insertedRows = rows.affectedRows;
+        var resultMessage = "";
+        if(insertedRows==0)
+          resultMessage = MESSAGES.delete_row_does_not_exist;
+        else
+          resultMessage = MESSAGES.delete_row_successfull;
+        res.send(resultMessage);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+        
+    });
+});
+
+
+
+/*
+Agregar nueva ciudad 
+Para llamarlo se debe enviar en el postman el siguiente body
+{
+  "nombre_ciudad":"Miami",
+  "id_pais":1
+}
+
+Donde  nombre_ciudad es el nombre de la ciudad y id_pais es el id de pais
+*/
+
+app.post('/ciudades',(req, res)=>{
+  let emp = req.body;
+  var sql = "INSERT INTO hc_ciudad(nombre_ciudad, id_pais) VALUES(?,?)";
+  connection.query(sql, [emp.nombre_ciudad, emp.id_pais], function(err, rows, fields) {
+      if (!err){
+        res.send(MESSAGES.insert_row_successfull);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
+
+/*Para llamarlo se debe enviar en el postman el siguiente body
+{
+"id_ciudad":2,
+"nombre_ciudad":"Miami"
+}
+
+Donde id_ciudad es el id de la ciudad y nombre_ciudad es el nuevo nombre de la ciudad*/
+
+app.put('/ciudades',(req, res)=>{
+  let emp = req.body;
+  var sql = "update hc_ciudad set nombre_ciudad = ? \
+             WHERE id_ciudad = ?;";
+  connection.query(sql, [emp.nombre_ciudad, emp.id_ciudad], function(err, rows, fields) {
+      if (!err){
+        var insertedRows = rows.affectedRows;
+        var resultMessage = "";
+        if(insertedRows==0)
+          resultMessage = MESSAGES.update_row_id_does_not_exist;
+        else
+          resultMessage = MESSAGES.update_row_successfull;
+        res.send(resultMessage);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
 
 server.listen(port, function(){
   console.log('Server listening on *:'+port);

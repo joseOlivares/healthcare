@@ -10,15 +10,24 @@ app.use(bodyparser.json());
 
 var port=process.env.PORT || 3000; //this is for heroku
 
+var cloudMysql={ //para conexion remota
+  host: "sql9.freesqldatabase.com",
+  user: "sql9297610",
+  password: "ANArgtCTgB",
+  database:"sql9297610",
+  insecureAuth : true,
+  multipleStatements:true
+};
+ var localMysql={ //conexion local
+   host: "localhost",
+   user: "root",
+   password: "password",
+   database:"mydb",
+   insecureAuth : true,
+   multipleStatements:true
+ };
 
-var connection = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "password",
-    database:"mydb",
-    insecureAuth : true,
-    multipleStatements:true
-});
+var connection = mysql.createConnection(cloudMysql);
 
 connection.connect((err)=>{
     if(!err)

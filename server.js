@@ -10,6 +10,7 @@ app.use(bodyparser.json());
 
 var port=process.env.PORT || 3000; //this is for heroku
 
+//--------Set datavase connection ------------------------
 var cloudMysql={ //para conexion remota
   host: "sql9.freesqldatabase.com",
   user: "sql9297610",
@@ -27,15 +28,29 @@ var cloudMysql={ //para conexion remota
    multipleStatements:true
  };
 
-var connection = mysql.createConnection(localMysql);
-
-connection.connect((err)=>{
-    if(!err)
-        console.log('DB connection succeded');
-    else
-        console.log('DB Connection failed \n Error'+err);
+let connection = mysql.createConnection(localMysql);
+let isConnected=false;
+connection.connect((err)=>{//intenta conectarse local
+    if(!err){
+        console.log('Local DB connection succeded');
+        isConnected=true;
+    }else{
+        console.log('Local DB Connection failed \n Error'+err);
+    }
 });
 
+if (!isConnected) { // intenta conectarse al db server remoto
+  connection = mysql.createConnection(cloudMysql);
+  connection.connect((err)=>{
+      if(!err){
+          console.log('Remote DB connection succeded');
+      }else{
+          console.log('Remote DB Connection failed \n Error'+err);
+      }
+  });
+}
+
+//---------------------End set database connection-------------
 /***************MESSAGES */
 const MESSAGES = {
   "delete_row_does_not_exist":{"message":"La fila a borrar no existe"},
@@ -50,7 +65,7 @@ const MESSAGES = {
 
 app.get('/', function(req, res){
   //res.sendFile(__dirname + '/index.html');
-  res.send('Project X is running...');
+  res.send('<div style="text-align: center;" >Project X is running...</div>');
 });
 
 /************************************PAISES****************************************** */
@@ -98,12 +113,12 @@ app.delete('/paises/:idpais',(req, res)=>{
           unexpectedError.excepcion= err;
           res.send(unexpectedError);
         }
-          
+
       });
 });
 
 /*
-Agregar nuevo país 
+Agregar nuevo país
 Para llamarlo se debe enviar en el postman el siguiente body
 {
 	"nombre_pais":"United States"
@@ -166,7 +181,7 @@ app.get('/ciudades',(req, res)=>{
                     INNER JOIN hc_pais\
                     WHERE hc_ciudad.id_pais = hc_pais.id_pais", function(err, rows, fields) {
       if (!err)
-        res.send(rows);      
+        res.send(rows);
       else{
         var unexpectedError = MESSAGES.unexpected_error;
         unexpectedError.excepcion= err;
@@ -225,14 +240,14 @@ app.delete('/ciudades/:idciudad',(req, res)=>{
         unexpectedError.excepcion= err;
         res.send(unexpectedError);
       }
-        
+
     });
 });
 
 
 
 /*
-Agregar nueva ciudad 
+Agregar nueva ciudad
 Para llamarlo se debe enviar en el postman el siguiente body
 {
   "nombre_ciudad":"Miami",

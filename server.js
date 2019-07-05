@@ -46,6 +46,12 @@ connection.connect((err)=>{//intenta conectarse local
 });
 
 //---------------------End set database connection-------------
+/* Separando rutas */
+const routeTest=require('./routes/test.js');
+app.use(routeTest);
+
+/* End routes*/
+
 /***************MESSAGES */
 const MESSAGES = {
   "delete_row_does_not_exist":{"message":"La fila a borrar no existe"},

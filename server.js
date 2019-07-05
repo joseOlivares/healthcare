@@ -172,6 +172,24 @@ app.put('/paises',(req, res)=>{
 
 
 /*******************************departamentos***************************** */
+
+/*Obtiene las departamentos de un pais para obtenerlas se debe llamar de la siguiente manera /paises/:idpais/departamentos*/
+app.get('/paises/:idpais/departamentos/',(req, res)=>{
+  connection.query("SELECT * from hc_departamento \
+                    INNER JOIN hc_pais\
+                    WHERE hc_departamento.id_pais = ? and \
+                    hc_departamento.id_pais = hc_pais.id_pais", [req.params.idpais],function(err, rows, fields) {
+      if (!err)
+          res.send(rows);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+      });
+});
+
+
 /**************Lista todas las departamentos que existen en la base de datos */
 app.get('/departamentos',(req, res)=>{
   connection.query("SELECT * from hc_departamento \
@@ -193,22 +211,6 @@ app.get('/departamentos/:iddepartamento',(req, res)=>{
                     INNER JOIN hc_pais\
                     WHERE hc_departamento.id_departamento = ? and \
                     hc_departamento.id_pais = hc_pais.id_pais", [req.params.iddepartamento],function(err, rows, fields) {
-      if (!err)
-          res.send(rows);
-        else{
-          var unexpectedError = MESSAGES.unexpected_error;
-          unexpectedError.excepcion= err;
-          res.send(unexpectedError);
-        }
-      });
-});
-
-/*Obtiene las departamentos de un pais para obtenerlas se debe llamar de la siguiente manera /paises/:idpais/departamentos*/
-app.get('/paises/:idpais/departamentos/',(req, res)=>{
-  connection.query("SELECT * from hc_departamento \
-                    INNER JOIN hc_pais\
-                    WHERE hc_departamento.id_pais = ? and \
-                    hc_departamento.id_pais = hc_pais.id_pais", [req.params.idpais],function(err, rows, fields) {
       if (!err)
           res.send(rows);
         else{
@@ -299,6 +301,142 @@ app.put('/departamentos',(req, res)=>{
       }
     });
 });
+
+/********************************************************************************************************* */
+/******************************************CIUDADES******************************************************* */
+/********************************************************************************************************* */
+
+/*Obtiene las ciudades de un departamento para obtenerlas se debe llamar de la siguiente manera /departamentos/:iddepartamento/ciudades*/
+app.get('/departamentos/:iddepartamento/ciudades/',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_departamento\
+                    WHERE hc_ciudad.id_departamento = ? and \
+                    hc_ciudad.id_departamento = hc_departamento.id_departamento", [req.params.iddepartamento],function(err, rows, fields) {
+      if (!err)
+          res.send(rows);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+      });
+});
+
+
+/**************Lista todas las ciudades que existen en la base de datos */
+app.get('/ciudades',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_departamento\
+                    INNER JOIN hc_pais\
+                    WHERE hc_ciudad.id_departamento = hc_departamento.id_departamento\
+                          and hc_pais.id_pais = hc_departamento.id_pais ", function(err, rows, fields) {
+      if (!err)
+        res.send(rows);
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
+/*Obtiene una ciudad por su id, Para obtenerlo se debe enviar el request /ciudades/id de la ciudad*/
+app.get('/ciudades/:idciudad',(req, res)=>{
+  connection.query("SELECT * from hc_ciudad \
+                    INNER JOIN hc_departamento\
+                    WHERE hc_ciudad.id_ciudad = ? and \
+                    hc_ciudad.id_departamento = hc_departamento.id_departamento", [req.params.idciudad],function(err, rows, fields) {
+      if (!err)
+          res.send(rows);
+        else{
+          var unexpectedError = MESSAGES.unexpected_error;
+          unexpectedError.excepcion= err;
+          res.send(unexpectedError);
+        }
+      });
+});
+
+
+/*Para borrar se debe enviar el request /ciudades/id del departamento*/
+app.delete('/ciudades/:idciudad',(req, res)=>{
+  connection.query("DELETE from hc_ciudad WHERE id_ciudad = ? ", [req.params.idciudad], function(err, rows, fields) {
+      if (!err){
+        var insertedRows = rows.affectedRows;
+        var resultMessage = "";
+        if(insertedRows==0)
+          resultMessage = MESSAGES.delete_row_does_not_exist;
+        else
+          resultMessage = MESSAGES.delete_row_successfull;
+        res.send(resultMessage);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+
+    });
+});
+
+
+
+/*
+Agregar nueva ciudad
+Para llamarlo se debe enviar en el postman el siguiente body
+{
+  "nombre_ciudad":"Miami",
+  "id_departamento":1
+}
+
+Donde  nombre_ciudad es el nombre de la ciudad y id_departamento es el id de departamento
+*/
+
+app.post('/ciudades',(req, res)=>{
+  let emp = req.body;
+  var sql = "INSERT INTO hc_ciudad(nombre_ciudad, id_departamento) VALUES(?,?)";
+  connection.query(sql, [emp.nombre_ciudad, emp.id_departamento], function(err, rows, fields) {
+      if (!err){
+        res.send(MESSAGES.insert_row_successfull);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
+
+/*Para llamarlo se debe enviar en el postman el siguiente body
+{
+"id_ciudad":2,
+"nombre_ciudad":"Miami"
+}
+
+Donde id_ciudad es el id de la ciudad y nombre_ciudad es el nuevo nombre de la ciudad*/
+
+app.put('/ciudades',(req, res)=>{
+  let emp = req.body;
+  var sql = "update hc_ciudad set nombre_ciudad = ? \
+             WHERE id_ciudad = ?;";
+  connection.query(sql, [emp.nombre_ciudad, emp.id_ciudad], function(err, rows, fields) {
+      if (!err){
+        var insertedRows = rows.affectedRows;
+        var resultMessage = "";
+        if(insertedRows==0)
+          resultMessage = MESSAGES.update_row_id_does_not_exist;
+        else
+          resultMessage = MESSAGES.update_row_successfull;
+        res.send(resultMessage);
+      }
+      else{
+        var unexpectedError = MESSAGES.unexpected_error;
+        unexpectedError.excepcion= err;
+        res.send(unexpectedError);
+      }
+    });
+});
+
 
 
 server.listen(port, function(){

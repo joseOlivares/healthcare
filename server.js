@@ -10,7 +10,7 @@ app.use(bodyparser.json());
 
 var port=process.env.PORT || 3000; //this is for heroku
 
-//--------Set datavase connection ------------------------
+//--------Set database connection ------------------------
 var cloudMysql={ //para conexion remota
   host: "sql9.freesqldatabase.com",
   user: "sql9297610",
@@ -65,7 +65,7 @@ const MESSAGES = {
 
 app.get('/', function(req, res){
   //res.sendFile(__dirname + '/index.html');
-  res.send('<div style="text-align: center;" >Project X is running...</div>');
+  res.send('<br/></br><div style="text-align: center;" ><h1>Project X is running...</h1></div>');
 });
 
 /************************************PAISES****************************************** */

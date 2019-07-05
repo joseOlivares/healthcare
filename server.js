@@ -29,11 +29,9 @@ var cloudMysql={ //para conexion remota
  };
 
 let connection = mysql.createConnection(localMysql);
-let isConnected=false;
 connection.connect((err)=>{//intenta conectarse local
     if(!err){
         console.log('Local DB connection succeded');
-        isConnected=true;
     }else{
         console.log('Local DB Connection failed \n Error'+err);
         connection = mysql.createConnection(cloudMysql);

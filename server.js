@@ -36,19 +36,16 @@ connection.connect((err)=>{//intenta conectarse local
         isConnected=true;
     }else{
         console.log('Local DB Connection failed \n Error'+err);
+        connection = mysql.createConnection(cloudMysql);
+        connection.connect((err)=>{
+            if(!err){
+                console.log('Remote DB connection succeded');
+            }else{
+                console.log('Remote DB Connection failed \n Error'+err);
+            }
+        });
     }
 });
-
-if (!isConnected) { // intenta conectarse al db server remoto
-  connection = mysql.createConnection(cloudMysql);
-  connection.connect((err)=>{
-      if(!err){
-          console.log('Remote DB connection succeded');
-      }else{
-          console.log('Remote DB Connection failed \n Error'+err);
-      }
-  });
-}
 
 //---------------------End set database connection-------------
 /***************MESSAGES */
@@ -174,12 +171,12 @@ app.put('/paises',(req, res)=>{
 });
 
 
-/*******************************CIUDADES***************************** */
-/**************Lista todas las ciudades que existen en la base de datos */
-app.get('/ciudades',(req, res)=>{
-  connection.query("SELECT * from hc_ciudad \
+/*******************************departamentos***************************** */
+/**************Lista todas las departamentos que existen en la base de datos */
+app.get('/departamentos',(req, res)=>{
+  connection.query("SELECT * from hc_departamento \
                     INNER JOIN hc_pais\
-                    WHERE hc_ciudad.id_pais = hc_pais.id_pais", function(err, rows, fields) {
+                    WHERE hc_departamento.id_pais = hc_pais.id_pais", function(err, rows, fields) {
       if (!err)
         res.send(rows);
       else{
@@ -190,12 +187,12 @@ app.get('/ciudades',(req, res)=>{
     });
 });
 
-/*Obtiene una ciudad por su id, Para obtenerlo se debe enviar el request /ciudades/id de la ciudad*/
-app.get('/ciudades/:idciudad',(req, res)=>{
-  connection.query("SELECT * from hc_ciudad \
+/*Obtiene una departamento por su id, Para obtenerlo se debe enviar el request /departamentos/id de la departamento*/
+app.get('/departamentos/:iddepartamento',(req, res)=>{
+  connection.query("SELECT * from hc_departamento \
                     INNER JOIN hc_pais\
-                    WHERE hc_ciudad.id_ciudad = ? and \
-                    hc_ciudad.id_pais = hc_pais.id_pais", [req.params.idciudad],function(err, rows, fields) {
+                    WHERE hc_departamento.id_departamento = ? and \
+                    hc_departamento.id_pais = hc_pais.id_pais", [req.params.iddepartamento],function(err, rows, fields) {
       if (!err)
           res.send(rows);
         else{
@@ -206,12 +203,12 @@ app.get('/ciudades/:idciudad',(req, res)=>{
       });
 });
 
-/*Obtiene las ciudades de un pais para obtenerlas se debe llamar de la siguiente manera /paises/:idpais/ciudades*/
-app.get('/paises/:idpais/ciudades/',(req, res)=>{
-  connection.query("SELECT * from hc_ciudad \
+/*Obtiene las departamentos de un pais para obtenerlas se debe llamar de la siguiente manera /paises/:idpais/departamentos*/
+app.get('/paises/:idpais/departamentos/',(req, res)=>{
+  connection.query("SELECT * from hc_departamento \
                     INNER JOIN hc_pais\
-                    WHERE hc_ciudad.id_pais = ? and \
-                    hc_ciudad.id_pais = hc_pais.id_pais", [req.params.idpais],function(err, rows, fields) {
+                    WHERE hc_departamento.id_pais = ? and \
+                    hc_departamento.id_pais = hc_pais.id_pais", [req.params.idpais],function(err, rows, fields) {
       if (!err)
           res.send(rows);
         else{
@@ -223,9 +220,9 @@ app.get('/paises/:idpais/ciudades/',(req, res)=>{
 });
 
 
-/*Para borrar se debe enviar el request /ciudades/id del pais*/
-app.delete('/ciudades/:idciudad',(req, res)=>{
-  connection.query("DELETE from hc_ciudad WHERE id_ciudad = ? ", [req.params.idciudad], function(err, rows, fields) {
+/*Para borrar se debe enviar el request /departamentos/id del pais*/
+app.delete('/departamentos/:iddepartamento',(req, res)=>{
+  connection.query("DELETE from hc_departamento WHERE id_departamento = ? ", [req.params.iddepartamento], function(err, rows, fields) {
       if (!err){
         var insertedRows = rows.affectedRows;
         var resultMessage = "";
@@ -247,20 +244,20 @@ app.delete('/ciudades/:idciudad',(req, res)=>{
 
 
 /*
-Agregar nueva ciudad
+Agregar nueva departamento
 Para llamarlo se debe enviar en el postman el siguiente body
 {
-  "nombre_ciudad":"Miami",
+  "nombre_departamento":"Miami",
   "id_pais":1
 }
 
-Donde  nombre_ciudad es el nombre de la ciudad y id_pais es el id de pais
+Donde  nombre_departamento es el nombre de la departamento y id_pais es el id de pais
 */
 
-app.post('/ciudades',(req, res)=>{
+app.post('/departamentos',(req, res)=>{
   let emp = req.body;
-  var sql = "INSERT INTO hc_ciudad(nombre_ciudad, id_pais) VALUES(?,?)";
-  connection.query(sql, [emp.nombre_ciudad, emp.id_pais], function(err, rows, fields) {
+  var sql = "INSERT INTO hc_departamento(nombre_departamento, id_pais) VALUES(?,?)";
+  connection.query(sql, [emp.nombre_departamento, emp.id_pais], function(err, rows, fields) {
       if (!err){
         res.send(MESSAGES.insert_row_successfull);
       }
@@ -275,17 +272,17 @@ app.post('/ciudades',(req, res)=>{
 
 /*Para llamarlo se debe enviar en el postman el siguiente body
 {
-"id_ciudad":2,
-"nombre_ciudad":"Miami"
+"id_departamento":2,
+"nombre_departamento":"Miami"
 }
 
-Donde id_ciudad es el id de la ciudad y nombre_ciudad es el nuevo nombre de la ciudad*/
+Donde id_departamento es el id de la departamento y nombre_departamento es el nuevo nombre de la departamento*/
 
-app.put('/ciudades',(req, res)=>{
+app.put('/departamentos',(req, res)=>{
   let emp = req.body;
-  var sql = "update hc_ciudad set nombre_ciudad = ? \
-             WHERE id_ciudad = ?;";
-  connection.query(sql, [emp.nombre_ciudad, emp.id_ciudad], function(err, rows, fields) {
+  var sql = "update hc_departamento set nombre_departamento = ? \
+             WHERE id_departamento = ?;";
+  connection.query(sql, [emp.nombre_departamento, emp.id_departamento], function(err, rows, fields) {
       if (!err){
         var insertedRows = rows.affectedRows;
         var resultMessage = "";

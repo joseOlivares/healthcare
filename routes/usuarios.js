@@ -17,11 +17,11 @@ router.get('/rest/api/usuarios',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuarios() ", function(err, rows, fields) {
             if (!err)
-            res.send(rows);
+                res.send(rows);
             else{
-            var unexpectedError = MESSAGES.unexpected_error;
-            unexpectedError.excepcion= err;
-            res.send(unexpectedError);
+                var unexpectedError = MESSAGES.unexpected_error;
+                unexpectedError.excepcion= err;
+                res.send(unexpectedError);
             }
         });
         // release connection

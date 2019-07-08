@@ -663,12 +663,12 @@ Donde:
 app.post('/usuarios',(req, res)=>{
   let emp = req.body;
   var sql = "CALL crearUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  connection.query(sql, 
+  connection.query(sql,
                    [emp.nombres,emp.status,emp.apellidos,emp.correo,
                     emp.password,emp.id_tipo_documento,emp.numero_documento,
                     emp.id_sexo,emp.id_estado_civil,emp.fecha_nacimiento,
                     emp.profesion,emp.conyugue,emp.tel_casa,emp.celular,
-                    emp.lugar_trabajo,emp.direccion,emp.id_ciudad], 
+                    emp.lugar_trabajo,emp.direccion,emp.id_ciudad],
                   function(err, rows, fields) {
       if (!err){
         let resultMessage = MESSAGES.insert_row_successfull;
@@ -732,7 +732,7 @@ Donde:
 app.put('/usuarios',(req, res)=>{
   let emp = req.body;
   var sql = "CALL actualizarUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-  connection.query(sql, 
+  connection.query(sql,
                    [emp.id_usuario,
                     emp.nombres,emp.status,emp.apellidos,emp.correo,
                     emp.password,emp.id_tipo_documento,emp.numero_documento,

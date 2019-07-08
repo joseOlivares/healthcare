@@ -13,7 +13,7 @@ const MESSAGES = require('../messages/messages.js');
 
 
 /**************Lista todas las usuarios que existen en la base de datos */
-router.get('/usuarios',(req, res)=>{
+router.get('/rest/api/usuarios',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuarios() ", function(err, rows, fields) {
             if (!err)
@@ -29,8 +29,8 @@ router.get('/usuarios',(req, res)=>{
     });   
 });
   
-/*Obtiene una usuario por su id, Para obtenerlo se debe enviar el request /usuarios/id de la usuario*/
-router.get('/usuarios/:idusuario',(req, res)=>{
+/*Obtiene una usuario por su id, Para obtenerlo se debe enviar el request /rest/api/usuarios/id de la usuario*/
+router.get('/rest/api/usuarios/:idusuario',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuario(?)", [req.params.idusuario],function(err, rows, fields) {
             if (!err)
@@ -47,8 +47,8 @@ router.get('/usuarios/:idusuario',(req, res)=>{
 });
   
   
-/*Para borrar se debe enviar el request /usuarios/id del usuario*/
-router.delete('/usuarios/:idusuario',(req, res)=>{
+/*Para borrar se debe enviar el request /rest/api/usuarios/id del usuario*/
+router.delete('/rest/api/usuarios/:idusuario',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_usuarios WHERE id_usuarios = ? ", [req.params.idusuario], function(err, rows, fields) {
             if (!err){
@@ -119,7 +119,7 @@ direccion         = Direccion del usuario
 id_ciudad         = Id de la tabla ciudad donde vive el usuario
 */
 
-router.post('/usuarios',(req, res)=>{
+router.post('/rest/api/usuarios',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "CALL crearUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -191,7 +191,7 @@ direccion         = Direccion del usuario
 id_ciudad         = Id de la tabla ciudad donde vive el usuario
 */
 
-router.put('/usuarios',(req, res)=>{
+router.put('/rest/api/usuarios',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "CALL actualizarUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";

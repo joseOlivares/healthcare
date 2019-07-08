@@ -10,8 +10,8 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 const MESSAGES = require('../messages/messages.js');
 
 
-/*Obtiene las direcciones de un ciudad para obtenerlas se debe llamar de la siguiente manera /ciudades/:idciudad/direcciones*/
-router.get('/ciudades/:idciudad/direcciones/',(req, res)=>{
+/*Obtiene las direcciones de un ciudad para obtenerlas se debe llamar de la siguiente manera /rest/api/ciudades/:idciudad/direcciones*/
+router.get('/rest/api/ciudades/:idciudad/direcciones/',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_direccion \
                         WHERE hc_direccion.id_ciudad = ?", [req.params.idciudad],function(err, rows, fields) {
@@ -30,7 +30,7 @@ router.get('/ciudades/:idciudad/direcciones/',(req, res)=>{
   
   
 /**************Lista todas las direcciones que existen en la base de datos */
-router.get('/direcciones',(req, res)=>{
+router.get('/rest/api/direcciones',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_direccion ", function(err, rows, fields) {
             if (!err)
@@ -46,8 +46,8 @@ router.get('/direcciones',(req, res)=>{
     });
 });
   
-/*Obtiene una direccion por su id, Para obtenerlo se debe enviar el request /direcciones/id de la direccion*/
-router.get('/direcciones/:iddireccion',(req, res)=>{
+/*Obtiene una direccion por su id, Para obtenerlo se debe enviar el request /rest/api/direcciones/id de la direccion*/
+router.get('/rest/api/direcciones/:iddireccion',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_direccion \
                         WHERE hc_direccion.id_direccion = ?", [req.params.iddireccion],function(err, rows, fields) {
@@ -65,8 +65,8 @@ router.get('/direcciones/:iddireccion',(req, res)=>{
 });
   
   
-/*Para borrar se debe enviar el request /direcciones/id del ciudad*/
-router.delete('/direcciones/:iddireccion',(req, res)=>{
+/*Para borrar se debe enviar el request /rest/api/direcciones/id del ciudad*/
+router.delete('/rest/api/direcciones/:iddireccion',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_direccion WHERE id_direccion = ? ", [req.params.iddireccion], function(err, rows, fields) {
             if (!err){
@@ -103,7 +103,7 @@ Para llamarlo se debe enviar en el postman el siguiente body
 Donde  nombre_direccion es el nombre de la direccion y id_ciudad es el id de ciudad
 */
 
-router.post('/direcciones',(req, res)=>{
+router.post('/rest/api/direcciones',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO hc_direccion(nombre_direccion, id_ciudad) VALUES(?,?)";
@@ -131,7 +131,7 @@ router.post('/direcciones',(req, res)=>{
 
 Donde id_direccion es el id de la direccion y nombre_direccion es el nuevo nombre de la direccion*/
 
-router.put('/direcciones',(req, res)=>{
+router.put('/rest/api/direcciones',(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_direccion set nombre_direccion = ? \

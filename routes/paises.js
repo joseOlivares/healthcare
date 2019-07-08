@@ -11,7 +11,7 @@ const MESSAGES = require('../messages/messages.js')//Importing global messages
 
 
 /*Obtener la lista de todos los paises*/
-router.get('/paises',(req, res)=>{
+router.get('/rest/api/paises',(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_pais", function(err, rows, fields) {
             if (!err)
@@ -27,8 +27,8 @@ router.get('/paises',(req, res)=>{
     });
 });
 
-/*Obtiene un pais por su id, Para obtenerlo se debe enviar el request /paises/id del pais*/
-router.get('/paises/:idpais',(req, res)=>{
+/*Obtiene un pais por su id, Para obtenerlo se debe enviar el request /rest/api/paises/id del pais*/
+router.get('/rest/api/paises/:idpais',(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_pais WHERE id_pais = ? ", [req.params.idpais], function(err, rows, fields) {
             if (!err)
@@ -45,8 +45,8 @@ router.get('/paises/:idpais',(req, res)=>{
 });
 
 
-/*Para borrar se debe enviar el request /paises/id del pais*/
-router.delete('/paises/:idpais',(req, res)=>{
+/*Para borrar se debe enviar el request /rest/api/paises/id del pais*/
+router.delete('/rest/api/paises/:idpais',(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_pais WHERE id_pais = ? ", [req.params.idpais], function(err, rows, fields) {
             if (!err){
@@ -80,7 +80,7 @@ Para llamarlo se debe enviar en el postman el siguiente body
 Donde  NombrePais es el nombre del pais
 */
 
-router.post('/paises',(req, res)=>{
+router.post('/rest/api/paises',(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO hc_pais(nombre_pais) VALUES(?)";
@@ -108,7 +108,7 @@ router.post('/paises',(req, res)=>{
 
 Donde Pais es el id del pais y NombrePais es el nuevo nombre*/
 
-router.put('/paises',(req, res)=>{
+router.put('/rest/api/paises',(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_pais set nombre_pais = ? \

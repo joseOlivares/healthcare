@@ -48,6 +48,4 @@ poolCluster.getConnection(function (err, connection) {
   //     }
   // });
 
-
-
 module.exports=poolCluster;//exports.pool = pool;

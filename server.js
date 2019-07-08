@@ -12,7 +12,7 @@ app.use(bodyparser.json());
 var port=process.env.PORT || 3000; //this is for heroku
 
 //--------Set database connection ------------------------
-const connection=require('../dbconn/db.js');//Importing database connection pool
+const connection=require('./dbconn/db.js');//Importing database connection pool
 //---------------------End set database connection-------------
 
 /* Separando rutas */

@@ -4,7 +4,7 @@ var server=require('http').createServer(app);
 var bodyparser = require('body-parser');
 var mysql = require('mysql');
 //var io = require('socket.io')(server);
-const connection=require('../dbconn/db.js');//Importing database connection pool
+
 
 app.use(express.static(__dirname + '/public')); //serving statics files like css, js, images
 app.use(bodyparser.json());
@@ -12,9 +12,9 @@ app.use(bodyparser.json());
 var port=process.env.PORT || 3000; //this is for heroku
 
 //--------Set database connection ------------------------
-
-
+const connection=require('../dbconn/db.js');//Importing database connection pool
 //---------------------End set database connection-------------
+
 /* Separando rutas */
 const routeTest=require('./routes/test.js');
 app.use(routeTest);

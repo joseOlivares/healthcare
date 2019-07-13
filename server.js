@@ -3,10 +3,12 @@ var app = express();
 var server=require('http').createServer(app);
 var bodyparser = require('body-parser');
 var mysql = require('mysql');
+
 //var io = require('socket.io')(server);
 
 app.use(express.static(__dirname + '/public')); //serving statics files like css, js, images
 app.use(bodyparser.json());
+app.use(express.urlencoded()); // para usar POST con Content-Type: application/x-www-form-urlencoded
 
 var port=process.env.PORT || 3000; //this is for heroku
 

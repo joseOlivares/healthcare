@@ -1,7 +1,7 @@
 var express= require('express');
 var app = express();
 var server=require('http').createServer(app);
-var bodyparser = require('body-parser');
+var bodyparser = require('body-parser');//ya no se necesita  a partir de Express 4.16
 var mysql = require('mysql');
 
 //var io = require('socket.io')(server);

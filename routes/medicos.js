@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las medicos que existen en la base de datos */
-router.get('/rest/api/medicos',(req, res)=>{
+router.get('/rest/api/medicos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_medicos", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/medicos',(req, res)=>{
 });
   
 /*Obtiene una medico por su id, Para obtenerlo se debe enviar el request /rest/api/medicos/id de la medico*/
-router.get('/rest/api/medicos/:idmedico',(req, res)=>{
+router.get('/rest/api/medicos/:idmedico',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_medicos WHERE id_medico = ?", [req.params.idmedico],function(err, rows, fields) {
             if (!err)
@@ -48,7 +52,7 @@ router.get('/rest/api/medicos/:idmedico',(req, res)=>{
   
   
 /*Para borrar se debe enviar el request /rest/api/medicos/id del medico*/
-router.delete('/rest/api/medicos/:idmedico',(req, res)=>{
+router.delete('/rest/api/medicos/:idmedico',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_medicos WHERE id_medico = ? ", [req.params.idmedico], function(err, rows, fields) {
             if (!err){
@@ -89,7 +93,7 @@ id_usuario = Id de la tabla usuarios
 identificacion_medica = Identificacion medica del medico
 */
 
-router.post('/rest/api/medicos',(req, res)=>{
+router.post('/rest/api/medicos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO hc_medicos(id_usuario, identificacion_medica) VALUES(?,?)";
@@ -126,7 +130,7 @@ id_usuario = Id de la tabla usuarios
 identificacion_medica = Identificacion medica del medico
 */
 
-router.put('/rest/api/medicos',(req, res)=>{
+router.put('/rest/api/medicos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_medicos set id_usuario = ?, identificacion_medica = ? \

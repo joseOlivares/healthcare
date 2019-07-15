@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las usuarios_roles que existen en la base de datos */
-router.get('/rest/api/usuarios-roles',(req, res)=>{
+router.get('/rest/api/usuarios-roles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_usuarios_roles", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/usuarios-roles',(req, res)=>{
 });
   
 /*Obtiene una rol por su id, Para obtenerlo se debe enviar el request /rest/api/usuarios-roles/id de la rol*/
-router.get('/rest/api/usuarios-roles/:idusuariorol',(req, res)=>{
+router.get('/rest/api/usuarios-roles/:idusuariorol',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_usuarios_roles WHERE hc_usuarios_roles.id_usuario_rol = ?", [req.params.idusuariorol],function(err, rows, fields) {
             if (!err)
@@ -47,7 +51,7 @@ router.get('/rest/api/usuarios-roles/:idusuariorol',(req, res)=>{
 });
 
 /*Obtiene  los roles asociados a un usuario /rest/api/usuarios-roles/* /1*/
-router.get('/rest/api/usuarios-roles/*/rol/idusuario',(req, res)=>{
+router.get('/rest/api/usuarios-roles/*/rol/idusuario',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuarioRoles(?);", [req.params.idusuario],function(err, rows, fields) {
             if (!err)
@@ -67,7 +71,7 @@ router.get('/rest/api/usuarios-roles/*/rol/idusuario',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/usuarios-roles/id del rol*/
-router.delete('/rest/api/usuarios_roles/:idusuariorol',(req, res)=>{
+router.delete('/rest/api/usuarios_roles/:idusuariorol',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_usuarios_roles WHERE id_usuario_rol = ? ", [req.params.idusuariosrol], function(err, rows, fields) {
             if (!err){
@@ -108,7 +112,7 @@ id_rol = id del rol
 id_usuario = id del usuario
 */
 
-router.post('/rest/api/usuarios-roles',(req, res)=>{
+router.post('/rest/api/usuarios-roles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_usuarios_roles(id_usuario, id_rol) VALUES (?,?)";
@@ -145,7 +149,7 @@ id_usuario = id del usuario
 id_usuario_rol id del usuario_rol
 */
 
-router.put('/rest/api/usuarios-roles',(req, res)=>{
+router.put('/rest/api/usuarios-roles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_usuarios_roles set id_rol = ?, id_usuario = ? \

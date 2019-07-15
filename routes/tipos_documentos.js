@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las tipo_documento que existen en la base de datos */
-router.get('/rest/api/tipos-documentos',(req, res)=>{
+router.get('/rest/api/tipos-documentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_tipo_documento", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/tipos-documentos',(req, res)=>{
 });
   
 /*Obtiene una tipo_documento por su id, Para obtenerlo se debe enviar el request /rest/api/tipos-documentos/id de la tipo_documento*/
-router.get('/rest/api/tipos-documentos/:idtipo_documento',(req, res)=>{
+router.get('/rest/api/tipos-documentos/:idtipo_documento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_tipo_documento WHERE hc_tipo_documento.id_tipo_documento = ?", [req.params.idtipo_documento],function(err, rows, fields) {
             if (!err)
@@ -48,7 +52,7 @@ router.get('/rest/api/tipos-documentos/:idtipo_documento',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/tipos-documentos/id del tipo_documento*/
-router.delete('/rest/api/tipos-documentos/:idtipo_documento',(req, res)=>{
+router.delete('/rest/api/tipos-documentos/:idtipo_documento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_tipo_documento WHERE id_tipo_documento = ? ", [req.params.idtipo_documento], function(err, rows, fields) {
             if (!err){
@@ -87,7 +91,7 @@ Donde:
 nombre_documento = Nombre del estado civil
 */
 
-router.post('/rest/api/tipos-documentos',(req, res)=>{
+router.post('/rest/api/tipos-documentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_tipo_documento(nombre_documento) VALUES (?)";
@@ -122,7 +126,7 @@ id_tipo_documento         = Id de la tipo_documento a actualizar
 nombre_tipo_documento     = Nombre del estado civil
 */
 
-router.put('/rest/api/tipos-documentos',(req, res)=>{
+router.put('/rest/api/tipos-documentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_tipo_documento set nombre_documento = ? \

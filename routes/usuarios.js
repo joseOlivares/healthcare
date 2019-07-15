@@ -11,9 +11,12 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
 
 /**************Lista todas las usuarios que existen en la base de datos */
-router.get('/rest/api/usuarios',(req, res)=>{
+router.get('/rest/api/usuarios',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuarios() ", function(err, rows, fields) {
             if (!err)
@@ -30,7 +33,7 @@ router.get('/rest/api/usuarios',(req, res)=>{
 });
   
 /*Obtiene una usuario por su id, Para obtenerlo se debe enviar el request /rest/api/usuarios/id de la usuario*/
-router.get('/rest/api/usuarios/:idusuario',(req, res)=>{
+router.get('/rest/api/usuarios/:idusuario',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("CALL obtenerUsuario(?)", [req.params.idusuario],function(err, rows, fields) {
             if (!err)
@@ -48,7 +51,7 @@ router.get('/rest/api/usuarios/:idusuario',(req, res)=>{
   
   
 /*Para borrar se debe enviar el request /rest/api/usuarios/id del usuario*/
-router.delete('/rest/api/usuarios/:idusuario',(req, res)=>{
+router.delete('/rest/api/usuarios/:idusuario',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_usuarios WHERE id_usuarios = ? ", [req.params.idusuario], function(err, rows, fields) {
             if (!err){
@@ -119,7 +122,7 @@ direccion         = Direccion del usuario
 id_ciudad         = Id de la tabla ciudad donde vive el usuario
 */
 
-router.post('/rest/api/usuarios',(req, res)=>{
+router.post('/rest/api/usuarios',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "CALL crearUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -191,7 +194,7 @@ direccion         = Direccion del usuario
 id_ciudad         = Id de la tabla ciudad donde vive el usuario
 */
 
-router.put('/rest/api/usuarios',(req, res)=>{
+router.put('/rest/api/usuarios',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "CALL actualizarUsuario(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";

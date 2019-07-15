@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las citas que existen en la base de datos */
-router.get('/rest/api/citas',(req, res)=>{
+router.get('/rest/api/citas',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_citas", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/citas',(req, res)=>{
 });
   
 /*Obtiene una cita por su id, Para obtenerlo se debe enviar el request /rest/api/citas/id de la cita*/
-router.get('/rest/api/citas/:idcita',(req, res)=>{
+router.get('/rest/api/citas/:idcita',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_citas WHERE hc_citas.id_cita = ?", [req.params.idcita],function(err, rows, fields) {
             if (!err)
@@ -57,7 +61,7 @@ router.get('/rest/api/citas/:idcita',(req, res)=>{
  *
  * 
  *********************************************/
-router.get('/rest/api/citas/*/idmedico/:idmedico/idpaciente/:idpaciente',(req, res)=>{
+router.get('/rest/api/citas/*/idmedico/:idmedico/idpaciente/:idpaciente',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let idPaciente = req.params.idpaciente;
         let idMedico = req.params.idmedico;
@@ -85,7 +89,7 @@ router.get('/rest/api/citas/*/idmedico/:idmedico/idpaciente/:idpaciente',(req, r
 });
   
 /*Para borrar se debe enviar el request /rest/api/citas/id del cita*/
-router.delete('/rest/api/citas/:idcita',(req, res)=>{
+router.delete('/rest/api/citas/:idcita',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_citas WHERE id_cita = ? ", [req.params.idcita], function(err, rows, fields) {
             if (!err){
@@ -134,7 +138,7 @@ fecha_cita      = fecha de la cita
 fecha_creacion  = fecha de creacion de la cita
 */
 
-router.post('/rest/api/citas',(req, res)=>{
+router.post('/rest/api/citas',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_citas(titulo, descripcion, fecha_cita, fecha_creacion, id_paciente, id_medico) VALUES (?,?,?,?,?,?)";
@@ -180,7 +184,7 @@ fecha_cita      = fecha de la cita
 fecha_creacion  = fecha de creacion de la cita
 */
 
-router.put('/rest/api/citas',(req, res)=>{
+router.put('/rest/api/citas',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_citas set id_paciente = ?, id_medico = ?, titulo = ?, descripcion = ?, fecha_cita = ?, fecha_creacion = ? \

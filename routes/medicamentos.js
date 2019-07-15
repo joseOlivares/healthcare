@@ -11,9 +11,12 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
 
 /**************Lista todas las medicamentos que existen en la base de datos */
-router.get('/rest/api/medicamentos',(req, res)=>{
+router.get('/rest/api/medicamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_medicamentos", function(err, rows, fields) {
             if (!err)
@@ -30,7 +33,7 @@ router.get('/rest/api/medicamentos',(req, res)=>{
 });
   
 /*Obtiene una medicamento por su id, Para obtenerlo se debe enviar el request /rest/api/medicamentos/id de la medicamento*/
-router.get('/rest/api/medicamentos/:idmedicamento',(req, res)=>{
+router.get('/rest/api/medicamentos/:idmedicamento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_medicamentos WHERE hc_medicamento.id_medicamento = ?", [req.params.idmedicamento],function(err, rows, fields) {
             if (!err)
@@ -48,7 +51,7 @@ router.get('/rest/api/medicamentos/:idmedicamento',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/medicamentos/id del medicamento*/
-router.delete('/rest/api/medicamentos/:idmedicamento',(req, res)=>{
+router.delete('/rest/api/medicamentos/:idmedicamento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_medicamentos WHERE id_medicamento = ? ", [req.params.idmedicamento], function(err, rows, fields) {
             if (!err){
@@ -87,7 +90,7 @@ Donde:
 nombre_medicamento = Nombre del estado civil
 */
 
-router.post('/rest/api/medicamentos',(req, res)=>{
+router.post('/rest/api/medicamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_medicamentos(nombre_medicamento) VALUES (?)";
@@ -122,7 +125,7 @@ id_medicamento         = Id de la medicamento a actualizar
 nombre_medicamento     = Nombre del estado civil
 */
 
-router.put('/rest/api/medicamentos',(req, res)=>{
+router.put('/rest/api/medicamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_medicamentos set nombre_medicamento = ? \

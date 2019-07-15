@@ -4,10 +4,11 @@
 
 const express= require('express');
 const router=express.Router();
-
 const dbPool=require('../dbconn/db.js');//Importing database connection pool
-
 const MESSAGES = require('../messages/messages.js')//Importing global messages
+
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
 
 
 /*Obtener la lista de todos los paises*/
@@ -46,7 +47,7 @@ router.get('/rest/api/paises/:idpais',(req, res)=>{
 
 
 /*Para borrar se debe enviar el request /rest/api/paises/id del pais*/
-router.delete('/rest/api/paises/:idpais',(req, res)=>{
+router.delete('/rest/api/paises/:idpais',verifyToken,(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_pais WHERE id_pais = ? ", [req.params.idpais], function(err, rows, fields) {
             if (!err){
@@ -80,7 +81,7 @@ Para llamarlo se debe enviar en el postman el siguiente body
 Donde  NombrePais es el nombre del pais
 */
 
-router.post('/rest/api/paises',(req, res)=>{
+router.post('/rest/api/paises',verifyToken,(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO hc_pais(nombre_pais) VALUES(?)";
@@ -108,7 +109,7 @@ router.post('/rest/api/paises',(req, res)=>{
 
 Donde Pais es el id del pais y NombrePais es el nuevo nombre*/
 
-router.put('/rest/api/paises',(req, res)=>{
+router.put('/rest/api/paises',verifyToken,(req, res)=>{
     dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_pais set nombre_pais = ? \

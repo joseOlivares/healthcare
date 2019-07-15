@@ -15,7 +15,7 @@ router.post('/testlogin',(req, res)=>{
   //test user sin conectarse a la base
   //aqui tendriamos que autenticar este usuario en la BD y luego psarlo a jwt
   const user={ id:1, username:'jluis', email:'jluis@test.com' };
-  const exp=30;//30 segundos
+  const exp=3600;//30 segundos
   jwt.sign({user:user},'palabrasecreta',{ expiresIn: exp } ,(err,token)=>{
     res.json({
       token
@@ -32,7 +32,7 @@ router.post('/testlogindb',(req, res)=>{
   dbPool.getConnection(function(err,connection) {
         const sql="call validarUsuario(?)";//query
         const params=[req.body.email.trim(),req.body.pass.trim()];//Parametros
-        const exp=35;//30 segundos de expiracion para el token
+        const exp=200;//30 segundos de expiracion para el token
         connection.query(sql,[params], function(err, rows, fields) {
             if (!err){
                 console.log("Registros encontrados ", rows[0].length);

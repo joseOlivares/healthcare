@@ -4,6 +4,7 @@
 /********************************************************************************************************* */
 
 
+
 const express= require('express');
 const router=express.Router();
 
@@ -11,9 +12,12 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
 
 /**************Lista todas las diagnosticos que existen en la base de datos */
-router.get('/rest/api/diagnosticos',(req, res)=>{
+router.get('/rest/api/diagnosticos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_diagnosticos", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/diagnosticos',(req, res)=>{
 });
   
 /*Obtiene una diagnostico por su id, Para obtenerlo se debe enviar el request /rest/api/diagnosticos/id de la diagnostico*/
-router.get('/rest/api/diagnosticos/:iddiagnostico',(req, res)=>{
+router.get('/rest/api/diagnosticos/:iddiagnostico',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_diagnosticos WHERE hc_diagnosticos.id_diagnostico = ?", [req.params.iddiagnostico],function(err, rows, fields) {
             if (!err)
@@ -57,7 +61,7 @@ router.get('/rest/api/diagnosticos/:iddiagnostico',(req, res)=>{
  *
  * 
  *********************************************/
-router.get('/rest/api/diagnosticos/*/idmedico/:idmedico/idpaciente/:idpaciente',(req, res)=>{
+router.get('/rest/api/diagnosticos/*/idmedico/:idmedico/idpaciente/:idpaciente',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let idPaciente = req.params.idpaciente;
         let idMedico = req.params.idmedico;
@@ -85,7 +89,7 @@ router.get('/rest/api/diagnosticos/*/idmedico/:idmedico/idpaciente/:idpaciente',
 });
   
 /*Para borrar se debe enviar el request /rest/api/diagnosticos/id del diagnostico*/
-router.delete('/rest/api/diagnosticos/:iddiagnostico',(req, res)=>{
+router.delete('/rest/api/diagnosticos/:iddiagnostico',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_diagnosticos WHERE id_diagnostico = ? ", [req.params.iddiagnostico], function(err, rows, fields) {
             if (!err){
@@ -132,7 +136,7 @@ descripcion     = Descipcion de la diagnostico
 fecha           = fecha de la diagnostico
 */
 
-router.post('/rest/api/diagnosticos',(req, res)=>{
+router.post('/rest/api/diagnosticos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_diagnosticos(titulo, descripcion, fecha, id_paciente, id_medico) VALUES (?,?,?,?,?,?)";
@@ -175,7 +179,7 @@ descripcion     = Descipcion de la diagnostico
 fecha           = fecha de la diagnostico
 */
 
-router.put('/rest/api/diagnosticos',(req, res)=>{
+router.put('/rest/api/diagnosticos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_diagnosticos set id_paciente = ?, id_medico = ?, titulo = ?, descripcion = ?, fecha = ?\

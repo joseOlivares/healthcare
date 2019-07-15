@@ -10,9 +10,12 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
 
 /*Obtiene las departamentos de un pais para obtenerlas se debe llamar de la siguiente manera /rest/api/paises/:idpais/departamentos*/
-router.get('/rest/api/paises/:idpais/departamentos/',(req, res)=>{
+router.get('/rest/api/paises/:idpais/departamentos/',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_departamento \
                         WHERE hc_departamento.id_pais = ?", [req.params.idpais],function(err, rows, fields) {
@@ -31,7 +34,7 @@ router.get('/rest/api/paises/:idpais/departamentos/',(req, res)=>{
   
   
 /**************Lista todas las departamentos que existen en la base de datos, */
-router.get('/rest/api/departamentos',(req, res)=>{
+router.get('/rest/api/departamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_departamento", function(err, rows, fields) {
             if (!err)
@@ -48,7 +51,7 @@ router.get('/rest/api/departamentos',(req, res)=>{
 });
   
 /*Obtiene una departamento por su id, Para obtenerlo se debe enviar el request /rest/api/departamentos/id de la departamento*/
-router.get('/rest/api/departamentos/:iddepartamento',(req, res)=>{
+router.get('/rest/api/departamentos/:iddepartamento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * from hc_departamento \
                         WHERE hc_departamento.id_departamento = ?", [req.params.iddepartamento],function(err, rows, fields) {
@@ -67,7 +70,7 @@ router.get('/rest/api/departamentos/:iddepartamento',(req, res)=>{
   
   
   /*Para borrar se debe enviar el request /rest/api/departamentos/id del pais*/
-router.delete('/rest/api/departamentos/:iddepartamento',(req, res)=>{
+router.delete('/rest/api/departamentos/:iddepartamento',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_departamento WHERE id_departamento = ? ", [req.params.iddepartamento], function(err, rows, fields) {
             if (!err){
@@ -104,7 +107,7 @@ Para llamarlo se debe enviar en el postman el siguiente body
 Donde  nombre_departamento es el nombre de la departamento y id_pais es el id de pais
 */
   
-router.post('/rest/api/departamentos',(req, res)=>{
+router.post('/rest/api/departamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO hc_departamento(nombre_departamento, id_pais) VALUES(?,?)";
@@ -132,7 +135,7 @@ router.post('/rest/api/departamentos',(req, res)=>{
 
 Donde id_departamento es el id de la departamento y nombre_departamento es el nuevo nombre de la departamento*/
 
-router.put('/rest/api/departamentos',(req, res)=>{
+router.put('/rest/api/departamentos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_departamento set nombre_departamento = ? \

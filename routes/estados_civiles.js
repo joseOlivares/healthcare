@@ -11,9 +11,12 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
 
 /**************Lista todas las estados_civiles que existen en la base de datos */
-router.get('/rest/api/estados-civiles',(req, res)=>{
+router.get('/rest/api/estados-civiles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_estado_civil", function(err, rows, fields) {
             if (!err)
@@ -30,7 +33,7 @@ router.get('/rest/api/estados-civiles',(req, res)=>{
 });
   
 /*Obtiene una estado_civil por su id, Para obtenerlo se debe enviar el request /rest/api/estados_civiles/id de la estado_civil*/
-router.get('/rest/api/estados-civiles/:idestado_civil',(req, res)=>{
+router.get('/rest/api/estados-civiles/:idestado_civil',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_estado_civil WHERE hc_estado_civil.id_estado_civil = ?", [req.params.idestado_civil],function(err, rows, fields) {
             if (!err)
@@ -48,7 +51,7 @@ router.get('/rest/api/estados-civiles/:idestado_civil',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/estados_civiles/id del estado_civil*/
-router.delete('/rest/api/estados-civiles/:idestado_civil',(req, res)=>{
+router.delete('/rest/api/estados-civiles/:idestado_civil',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_estado_civil WHERE id_estado_civil = ? ", [req.params.idestado_civil], function(err, rows, fields) {
             if (!err){
@@ -87,7 +90,7 @@ Donde:
 nombre_estado_civil = Nombre del estado civil
 */
 
-router.post('/rest/api/estados-civiles',(req, res)=>{
+router.post('/rest/api/estados-civiles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_estado_civil(nombre_estado_civil) VALUES (?)";
@@ -122,7 +125,7 @@ id_estado_civil         = Id de la estado_civil a actualizar
 nombre_estado_civil     = Nombre del estado civil
 */
 
-router.put('/rest/api/estados-civiles',(req, res)=>{
+router.put('/rest/api/estados-civiles',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_estado_civil set nombre_estado_civil = ? \

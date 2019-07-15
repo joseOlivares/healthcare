@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las parentezco que existen en la base de datos */
-router.get('/rest/api/parentezcos',(req, res)=>{
+router.get('/rest/api/parentezcos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_parentezco", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/parentezcos',(req, res)=>{
 });
   
 /*Obtiene una parentezco por su id, Para obtenerlo se debe enviar el request /rest/api/parentezcos/id de la parentezco*/
-router.get('/rest/api/parentezcos/:idparentezco',(req, res)=>{
+router.get('/rest/api/parentezcos/:idparentezco',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_parentezco WHERE hc_parentezco.id_parentezco = ?", [req.params.idparentezco],function(err, rows, fields) {
             if (!err)
@@ -48,7 +52,7 @@ router.get('/rest/api/parentezcos/:idparentezco',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/parentezcos/id del parentezco*/
-router.delete('/rest/api/parentezcos/:idparentezco',(req, res)=>{
+router.delete('/rest/api/parentezcos/:idparentezco',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_parentezco WHERE id_parentezco = ? ", [req.params.idparentezco], function(err, rows, fields) {
             if (!err){
@@ -87,7 +91,7 @@ Donde:
 valor_parentezco = Nombre del parentezco
 */
 
-router.post('/rest/api/parentezcos',(req, res)=>{
+router.post('/rest/api/parentezcos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_parentezco(valor_parentezco) VALUES (?)";
@@ -122,7 +126,7 @@ id_parentezco         = Id de la parentezco a actualizar
 valor_parentezco     = Nombre del parentezco
 */
 
-router.put('/rest/api/parentezcos',(req, res)=>{
+router.put('/rest/api/parentezcos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_parentezco set valor_parentezco = ? \

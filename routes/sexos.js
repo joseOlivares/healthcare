@@ -11,9 +11,13 @@ const dbPool=require('../dbconn/db.js');//Importing database connection pool
 
 const MESSAGES = require('../messages/messages.js');
 
+//---- Usando JsonWebTokens----------------------------------------
+const verifyToken=require('../tools/verify_token.js');//funcion de validacion de token
+
+
 
 /**************Lista todas las sexo que existen en la base de datos */
-router.get('/rest/api/sexos',(req, res)=>{
+router.get('/rest/api/sexos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_sexo", function(err, rows, fields) {
             if (!err)
@@ -30,7 +34,7 @@ router.get('/rest/api/sexos',(req, res)=>{
 });
   
 /*Obtiene una sexo por su id, Para obtenerlo se debe enviar el request /rest/api/sexos/id de la sexo*/
-router.get('/rest/api/sexos/:idsexo',(req, res)=>{
+router.get('/rest/api/sexos/:idsexo',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("SELECT * FROM hc_sexo WHERE hc_sexo.id_sexo = ?", [req.params.idsexo],function(err, rows, fields) {
             if (!err)
@@ -48,7 +52,7 @@ router.get('/rest/api/sexos/:idsexo',(req, res)=>{
 
   
 /*Para borrar se debe enviar el request /rest/api/sexos/id del sexo*/
-router.delete('/rest/api/sexos/:idsexo',(req, res)=>{
+router.delete('/rest/api/sexos/:idsexo',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         connection.query("DELETE from hc_sexo WHERE id_sexo = ? ", [req.params.idsexo], function(err, rows, fields) {
             if (!err){
@@ -87,7 +91,7 @@ Donde:
 nombre_sexo = Nombre del estado civil
 */
 
-router.post('/rest/api/sexos',(req, res)=>{
+router.post('/rest/api/sexos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "INSERT INTO  hc_sexo(nombre_sexo) VALUES (?)";
@@ -122,7 +126,7 @@ id_sexo         = Id de la sexo a actualizar
 nombre_sexo     = Nombre del estado civil
 */
 
-router.put('/rest/api/sexos',(req, res)=>{
+router.put('/rest/api/sexos',verifyToken,(req, res)=>{
 	dbPool.getConnection(function(err,connection) {
         let emp = req.body;
         var sql = "update hc_sexo set nombre_sexo = ? \
